@@ -9,6 +9,7 @@ A personal cheatsheet for enumerating and attacking Active Directory, plus a col
 ## Nuances
 
 - [KRB_AP_ERR_SKEW or ntpdate issues](nuances/README.md#krb_ap_err_skew-or-ntpdate-issues-for-kerberos-authentication)
+- [KDC_ERR_NEVER_VALID with faketime](nuances/README.md#kdc_err_never_valid-with-faketime)
 - [KDC_ERR_S_PRINCIPAL_UNKNOWN](nuances/README.md#kdc_err_s_principal_unknown)
   - [KDC_ERR_S_PRINCIPAL_UNKNOWN on RBCD](nuances/README.md#kdc_err_s_principal_unknown-on-rbcd)
 - [KDC_ERR_PADATA_TYPE_NOSUPP on certificate authentication](nuances/README.md#kdc_err_padata_type_nosupp-on-certificate-authentication)

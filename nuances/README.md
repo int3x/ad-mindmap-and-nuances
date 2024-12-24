@@ -5,6 +5,7 @@ A list of gotchas and nuances/subtleties that I've encountered while attacking A
 ## Index
 
 - [KRB_AP_ERR_SKEW or ntpdate issues](#krb_ap_err_skew-or-ntpdate-issues-for-kerberos-authentication)
+- [KDC_ERR_NEVER_VALID with faketime](#kdc_err_never_valid-with-faketime)
 - [KDC_ERR_S_PRINCIPAL_UNKNOWN](#kdc_err_s_principal_unknown)
   - [KDC_ERR_S_PRINCIPAL_UNKNOWN on RBCD](#kdc_err_s_principal_unknown-on-rbcd)
 - [KDC_ERR_PADATA_TYPE_NOSUPP on certificate authentication](#kdc_err_padata_type_nosupp-on-certificate-authentication)
@@ -24,6 +25,19 @@ sudo ntpdate target.tld
 
 However, virtualization solutions like VMware and VirtualBox have a feature to force sync the time on Virtual Machines with the time on host machine.  
 This feature is not desirable for kerberos authentication. On VMWare Workstation, it can be disabled by unchecking `Synchronize guest time with host` in `Virtual Machine Settings > Options > VMware Tools`
+
+## KDC_ERR_NEVER_VALID with faketime
+
+`faketime` is an alternative to `ntpdate` for time synchronization. Unlike `ntpdate` which changes time system-wide, `faketime` changes time for a given command.  
+It intercepts syscalls which retrieve time, and reports "faked" times.
+
+```bash
+faketime "$(ntpdate -q target.tld | cut -d ' ' -f 1,2)" getTGT.py target.tld/domainuser:password
+```
+
+Sometimes, only a fraction of the time-retrieval syscalls used by a tool get intercepted, and that results in the `KDC_ERR_NEVER_VALID` error.  
+It implies that the expiry time for a TGT is before its starting time. That can happen when the faked time is used as starting time, but expiry time gets calculated using real time.  
+The solution to such issues is to change the system-wide time with `ntpdate`.
 
 ## KDC_ERR_S_PRINCIPAL_UNKNOWN
 
