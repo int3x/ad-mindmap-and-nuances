@@ -8,10 +8,15 @@ A list of gotchas and nuances/subtleties that I've encountered while attacking A
 - [KDC_ERR_NEVER_VALID with faketime](#kdc_err_never_valid-with-faketime)
 - [KDC_ERR_S_PRINCIPAL_UNKNOWN](#kdc_err_s_principal_unknown)
   - [KDC_ERR_S_PRINCIPAL_UNKNOWN on RBCD](#kdc_err_s_principal_unknown-on-rbcd)
+- [STATUS_MORE_PROCESSING_REQUIRED](#status_more_processing_required)
 - [KDC_ERR_PADATA_TYPE_NOSUPP on certificate authentication](#kdc_err_padata_type_nosupp-on-certificate-authentication)
 - [DNS Resolution errors](#dns-resolution-errors)
 - [KDC_ERR_TGT_REVOKED](#kdc_err_tgt_revoked)
-  - [KDC_ERR_TGT_REVOKED on parent-child trust abuse](#kdc_err_tgt_revoked-on-golden-or-trust-tickets)
+  - [KDC_ERR_TGT_REVOKED on golden or trust tickets](#kdc_err_tgt_revoked-on-golden-or-trust-tickets)
+- [INSUFF_ACCESS_RIGHTS](#insuff_access_rights)
+  - [INSUFF_ACCESS_RIGHTS while updating msDS-KeyCredentialLink](#insuff_access_rights-while-updating-msds-keycredentiallink)
+- [STATUS_ACCESS_DENIED](#status_access_denied)
+  - [STATUS_ACCESS_DENIED while adding members to group](#status_access_denied-while-adding-members-to-group)
 
 ## KRB_AP_ERR_SKEW or ntpdate issues for kerberos authentication
 
@@ -47,6 +52,10 @@ When performing Resource-Based Constrained Delegation (RBCD) attack, sometimes t
 It could suggest that the impersonating account does not have an SPN set, nor is a machine account.  
 [SPN-less RBCD](https://www.tiraniddo.dev/2022/05/exploiting-rbcd-using-normal-user.html) can still be invoked. However, the steps are more involved, and it renders the account unusable.
 
+## STATUS_MORE_PROCESSING_REQUIRED
+
+I'm uncertain about this error. It shows up randomly and sometimes goes away when the same command is used again.
+
 ## KDC_ERR_PADATA_TYPE_NOSUPP on certificate authentication
 
 When performing certificate authentication with tools like `certipy`, sometimes the error `KDC_ERR_PADATA_TYPE_NOSUPP` is encountered.  
@@ -77,3 +86,28 @@ As a result, a valid `user-id` and `username` needs to be specified to `ticketer
 ```bash
 ticketer.py -aesKey ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff -domain-sid S-1-5-21-0000000000-0000000000-111111111 -domain child.target.tld -extra-sid S-1-5-21-0000000000-000000000-222222222-519 -user-id 1111 'existing_user'
 ```
+
+## INSUFF_ACCESS_RIGHTS
+
+### INSUFF_ACCESS_RIGHTS while updating msDS-KeyCredentialLink
+
+When performing shadow credentials attack, i.e. updating msDS-KeyCredentialLink attribute, the `INSUFF_ACCESS_RIGHTS` error can show up if:
+
+- Privileges are legitimately lacking.
+- Only machine accounts can edit their own `msDS-KeyCredentialLink`, user accounts cannot.
+- The `msDS-KeyCredentialLink` is already populated. In that case, it needs to be cleared first.
+
+## STATUS_ACCESS_DENIED
+
+### STATUS_ACCESS_DENIED while adding members to group
+
+After abusing WriteOwner privilege over a group, the error `STATUS_ACCESS_DENIED` can be encountered while trying to add members.  
+Even though the group owner has WriteDacl privilege over the group, the AddMember privilege is absent in the DACL ACEs.  
+The WriteDacl needs to be utilized to add the required ACEs:
+
+```bash
+owneredit.py -action write -new-owner jdoe -target-dn 'CN=TargetGroup,CN=Users,DC=target,DC=tld' target.tld/jdoe:password
+dacledit.py -action write -rights FullControl -principal jdoe -target-dn 'CN=TargetGroup,CN=Users,DC=target,DC=tld' -inheritance target.tld/jdoe:password
+```
+
+After using `dacledit.py`, members can be added without errors.
