@@ -6,6 +6,11 @@ A personal cheatsheet for enumerating and attacking Active Directory, plus a col
 
 - [Initial enumeration without credentials](<mindmaps/Initial.png>)
 
+## File transfer
+
+- [Delivery](transfer/README.md#delivering-to-a-windows-machine)
+- [Exfiltration](transfer/README.md#exfiltrating-from-a-windows-machine)
+
 ## Nuances
 
 - [KRB_AP_ERR_SKEW or ntpdate issues](nuances/README.md#krb_ap_err_skew-or-ntpdate-issues-for-kerberos-authentication)
