@@ -26,3 +26,4 @@ A personal cheatsheet for enumerating and attacking Active Directory, plus a col
   - [INSUFF_ACCESS_RIGHTS while updating msDS-KeyCredentialLink](nuances/README.md#insuff_access_rights-while-updating-msds-keycredentiallink)
 - [STATUS_ACCESS_DENIED](nuances/README.md#status_access_denied)
   - [STATUS_ACCESS_DENIED while adding members to group](nuances/README.md#status_access_denied-while-adding-members-to-group)
+- [PKINIT Error Messages discussed on Orange Cyberdefense blog](nuances/README.md#pkinit-error-messages-discussed-on-orange-cyberdefense-blog)

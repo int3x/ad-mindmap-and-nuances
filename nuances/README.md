@@ -17,6 +17,7 @@ A list of gotchas and nuances/subtleties that I've encountered while attacking A
   - [INSUFF_ACCESS_RIGHTS while updating msDS-KeyCredentialLink](#insuff_access_rights-while-updating-msds-keycredentiallink)
 - [STATUS_ACCESS_DENIED](#status_access_denied)
   - [STATUS_ACCESS_DENIED while adding members to group](#status_access_denied-while-adding-members-to-group)
+- [PKINIT Error Messages discussed on Orange Cyberdefense blog](#pkinit-error-messages-discussed-on-orange-cyberdefense-blog)
 
 ## KRB_AP_ERR_SKEW or ntpdate issues for kerberos authentication
 
@@ -111,3 +112,22 @@ dacledit.py -action write -rights FullControl -principal jdoe -target-dn 'CN=Tar
 ```
 
 After using `dacledit.py`, members can be added without errors.
+
+## PKINIT Error Messages discussed on Orange Cyberdefense blog
+
+In March 2025, Orange Cyberdefense's SensePost Team published an article describing some common PKINIT error messages, their causes and remediation.  
+Find the blog post at [Diving Into AD CS: Exploring Some Common Error Messages](https://sensepost.com/blog/2025/diving-into-ad-cs-exploring-some-common-error-messages/)  
+The discussed errors were:
+
+- KDC_ERR_INCONSISTENT_KEY_PURPOSE
+- KDC_ERROR_CLIENT_NOT_TRUSTED
+- KDC_ERR_PADATA_TYPE_NOSUPP
+
+In comments to the twitter post sharing this blog, [RedTeam Pentesting](https://x.com/RedTeamPT) added some more insights of their own.  
+Additional causes for these errors:
+
+- CLIENT_NOT_TRUSTED - Inaccessible/expired revocation lists
+- PADATA_TYPE_NOSUPP - Failed autoenrollment on DC
+
+The autoenrollment issue can often be fixed by running `certutil -pulse` on the DC.  
+Also it is good to know that Pass-the-Cert will fail when the cert has no UPN in the otherName SAN extension (happens in some cases) or when the cert belongs to a `msDS-KeyCredentialLink`.
